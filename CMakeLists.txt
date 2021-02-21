@@ -6,7 +6,7 @@ project(PROJECT)
 #设置变量TARGETS，其内容为"test"
 set(TARGETS "test")
 
-set(SUBDIRS "apue.3e")
+set(SUBDIRS ".")
 foreach(dir ${SUBDIRS})
 	aux_source_directory(${PROJECT_SOURCE_DIR}/${dir} ALL_SRC)
 	include_directories(${PROJECT_SOURCE_DIR}/${dir}/include)
@@ -25,6 +25,13 @@ set(OUTDIRS "build") # Debug:调试 Release:不调试
 set(LIBRARY_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/${OUTDIRS}/lib/")
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/${OUTDIRS}/bin/")
 
+# glib
+find_package(PkgConfig)
+pkg_search_module(GLIB glib-2.0)
+include_directories(${GLIB_INCLUDE_DIRS})
+link_directories(${GLIB_LIBRARY_DIRS})
+add_definitions(${GLIB_CFLAGS_OTHER})
+
 
 # 添加对gdb的支持
 SET(CMAKE_BUILD_TYPE "Debug")
@@ -38,10 +45,13 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 #生成可执行文件
 #add_executable(${TARGETS} ${ADD_SRC} ${SUB_SRC} ${MAIN_SRC})
-add_executable(${TARGETS} ${ALL_SRC} ${MAIN_SRC})
+add_executable(${TARGETS} ${ALL_SRC} ${MAIN_SRC} ${Glib_LIBRARY})
 
 
 #提示错误：undefined reference to `pthread_create' collect2: error: ld returned 1 exit status
 #解决：需要添加 pthread 库
 find_package(Threads)
 target_link_libraries(${TARGETS} ${CMAKE_THREAD_LIBS_INIT})
+
+target_link_libraries(${TARGETS} ${GLIB_LIBRARIES})
+
