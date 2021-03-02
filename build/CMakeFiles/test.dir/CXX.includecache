@@ -15,10 +15,4 @@ stdlib.h
 -
 stdio.h
 -
-sys/types.h
--
-regex.h
--
-memory.h
--
 
